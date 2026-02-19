@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>{{ product.name }}</title>
+
+<style>
+
+body{
+    margin:0;
+    font-family: Georgia, serif;
+    background:#f2f2f2;
+    color:#2c2c2c;
+}
+
+/* main container */
+
+.page{
+    max-width:420px;
+    margin:auto;
+    background:white;
+    padding:24px;
+    padding-bottom:100px; /* место под кнопку */
+}
+
+/* header */
+
+.title{
+    text-align:center;
+    letter-spacing:2px;
+    color:#5b6b53;
+    font-weight:bold;
+}
+
+.subtitle{
+    text-align:center;
+    font-size:20px;
+    margin-bottom:18px;
+}
+
+/* text */
+
+.text-block{
+    margin:18px 0;
+    line-height:1.6;
+}
+
+/* timeline — вертикальная карточка */
+
+.timeline{
+    margin-top:30px;
+}
+
+.item{
+    margin-bottom:32px;
+}
+
+.item img{
+    width:100%;
+    height:180px;
+    object-fit:cover;
+    border-radius:8px;
+}
+
+.item-text{
+    margin-top:10px;
+    font-size:14px;
+}
+
+/* FIXED BUY BUTTON */
+
+.buy-fixed{
+    position:fixed;
+    bottom:0;
+    left:0;
+    right:0;
+    background:white;
+    padding:14px;
+    box-shadow:0 -2px 10px rgba(0,0,0,0.1);
+}
+
+.buy-btn{
+    width:100%;
+    padding:14px;
+    background:#8d9a83;
+    color:white;
+    border-radius:22px;
+    border:none;
+    font-size:18px;
+    cursor:pointer;
+}
+
+.buy-btn:hover{
+    background:#76866c;
+}
+
+/* Modal */
+
+.modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.5);
+    align-items:center;
+    justify-content:center;
+}
+
+.modal-box{
+    background:white;
+    padding:24px;
+    border-radius:10px;
+    width:320px;
+}
+
+.modal input,
+.modal select{
+    width:100%;
+    margin-top:10px;
+    padding:8px;
+}
+
+.modal button{
+    margin-top:12px;
+    width:100%;
+    padding:10px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="page">
+
+<div class="title">GUIDE</div>
+<div class="subtitle">{{ product.name }}</div>
+
+<div class="text-block">
+    {{ product.description }}
+</div>
+
+<div class="text-block">
+    Price: <b>{{ product.price / 100 }} {{ product.currency }}</b>
+</div>
+
+<div class="timeline">
+
+<div class="item">
+<img src="/static/img/azores1.jpg">
+<div class="item-text">
+Мифы о путешествии на Азоры. Разберем ожидания vs реальность.
+</div>
+</div>
+
+<div class="item">
+<img src="/static/img/azores2.jpg">
+<div class="item-text">
+Когда ехать на Сан-Мигел. Погода, сезонность, цены.
+</div>
+</div>
+
+<div class="item">
+<img src="/static/img/azores3.jpg">
+<div class="item-text">
+План острова — поймёшь географию до прилёта.
+</div>
+</div>
+
+<div class="item">
+<img src="/static/img/azores4.jpg">
+<div class="item-text">
+Где остановиться. Районы, логика выбора.
+</div>
+</div>
+
+<div class="item">
+<img src="/static/img/azores5.jpg">
+<div class="item-text">
+Полезные приложения и советы по передвижению.
+</div>
+</div>
+
+<div class="item">
+<img src="/static/img/azores6.jpg">
+<div class="item-text">
+Кухня Сан-Мигела — что попробовать.
+</div>
+</div>
+
+</div>
+</div>
+
+
+<!-- FIXED BUY BAR -->
+
+<div class="buy-fixed">
+<button class="buy-btn" onclick="openModal()">Buy guide</button>
+</div>
+
+
+<!-- PAYMENT MODAL -->
+
+<div class="modal" id="modal">
+<div class="modal-box">
+
+<input id="email" type="email" placeholder="Email">
+
+<select id="currency">
+<option value="EUR">EUR</option>
+<option value="USD">USD</option>
+</select>
+
+<button onclick="pay()">Pay</button>
+<button onclick="closeModal()">Cancel</button>
+
+</div>
+</div>
+
+
+<script>
+
+const productCode = "{{ product.product_code }}";
+
+function openModal(){
+    document.getElementById("modal").style.display="flex";
+}
+
+function closeModal(){
+    document.getElementById("modal").style.display="none";
+}
+
+async function pay(){
+
+    const email = document.getElementById("email").value;
+    const currency = document.getElementById("currency").value;
+
+    const response = await fetch("/api/v1/order",{
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({
+            product_code: productCode,
+            lang:"en",
+            customers_email: email,
+            settlement_currency: currency
+        })
+    });
+
+    const data = await response.json();
+
+    if(data.url){
+        window.location.href = data.url;
+    }else{
+        alert("Payment error");
+    }
+}
+
+</script>
+
+</body>
+</html>

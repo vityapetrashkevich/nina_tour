@@ -26,4 +26,4 @@ app.add_middleware(
 app.mount("/static", StaticFiles(directory="app/web/static"), name="static")
 
 app.include_router(api_router, prefix="/api")
-app.include_router(web_router)
+app.include_router(web_router, tags=["Web Routes"])

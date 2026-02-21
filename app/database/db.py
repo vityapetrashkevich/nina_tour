@@ -8,7 +8,7 @@ print(f"DATABASE_URL is: {settings.DATABASE_URL}")
 # engine = create_engine(settings.DATABASE_URL)
 
 async_engine = create_async_engine(
-    settings.DATABASE_URL, echo=True
+    settings.DATABASE_URL, echo=True, pool_pre_ping=True
 )
 
 async_session_maker = sessionmaker(

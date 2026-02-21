@@ -1,116 +1,66 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ lang or 'en' }}">
 <head>
-  <meta charset="UTF-8">
-  <title>{% block title %}Nina{% endblock %}</title>
+    <meta charset="UTF-8">
+    <title>{% block title %}Guide{% endblock %}</title>
 
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <style>
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background-color: #f6f7f9;
-      color: #222;
-    }
-
-    header {
-      background: #ffffff;
-      padding: 16px 24px;
-      border-bottom: 1px solid #e5e7eb;
-      font-weight: 600;
-    }
-
-    main {
-      max-width: 900px;
-      margin: 40px auto;
-      padding: 0 16px;
-    }
-
-    .card {
-      background: #ffffff;
-      border-radius: 12px;
-      padding: 24px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-    }
-
-    h1 {
-      margin-top: 0;
-    }
-
-    button {
-      background: #2563eb;
-      color: white;
-      border: none;
-      padding: 12px 20px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 16px;
-    }
-
-    button:hover {
-      background: #1d4ed8;
-    }
-
-    button.secondary {
-      background: #e5e7eb;
-      color: #111;
-    }
-
-    input, select {
-      width: 100%;
-      padding: 10px;
-      margin-top: 6px;
-      margin-bottom: 14px;
-      border-radius: 6px;
-      border: 1px solid #d1d5db;
-      font-size: 15px;
-    }
-
-    .price {
-      font-size: 24px;
-      font-weight: 600;
-      margin: 20px 0;
-    }
-
-    /* Modal */
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.5);
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal {
-      background: white;
-      padding: 24px;
-      border-radius: 12px;
-      width: 100%;
-      max-width: 400px;
-    }
-
-    .modal h3 {
-      margin-top: 0;
-    }
-
-    .modal-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      margin-top: 16px;
-    }
-  </style>
+    <link rel="stylesheet" href="/static/css/product.css">
 </head>
-
 <body>
-  <header>
-    SnovaTour
-  </header>
 
-  <main>
+{# --- TRANSLATIONS AVAILABLE TO ALL CHILD TEMPLATES --- #}
+{% set translations = {
+    'ru': {
+        'guide_label': 'ПУТЕВОДИТЕЛЬ',
+        'inside_header': 'ЧТО НАХОДИТСЯ ВНУТРИ ПУТЕВОДИТЕЛЯ',
+        'buy': 'Купить гайд',
+        'order_details': 'Данные заказа',
+        'email_placeholder': 'Ваш Email',
+        'currency_label': 'Валюта оплаты',
+        'go_to_payment': 'Перейти к оплате',
+        'cancel': 'Отмена',
+        'error_title': 'Ошибка',
+        'oops': 'Упс!',
+        'not_found': 'Страница не найдена или продукт отсутствует.',
+        'back': 'Вернуться назад'
+    },
+    'en': {
+        'guide_label': 'GUIDE',
+        'inside_header': 'WHAT’S INSIDE THE GUIDE',
+        'buy': 'Buy guide',
+        'order_details': 'Order details',
+        'email_placeholder': 'Your Email',
+        'currency_label': 'Payment currency',
+        'go_to_payment': 'Go to payment',
+        'cancel': 'Cancel',
+        'error_title': 'Error',
+        'oops': 'Oops!',
+        'not_found': 'Page not found or product does not exist.',
+        'back': 'Go back'
+    },
+    'pl': {
+        'guide_label': 'PRZEWODNIK',
+        'inside_header': 'CO ZNAJDUJE SIĘ W PRZEWODNIKU',
+        'buy': 'Kup przewodnik',
+        'order_details': 'Dane zamówienia',
+        'email_placeholder': 'Twój email',
+        'currency_label': 'Waluta płatności',
+        'go_to_payment': 'Przejdź do płatności',
+        'cancel': 'Anuluj',
+        'error_title': 'Błąd',
+        'oops': 'Ups!',
+        'not_found': 'Strona nie została znaleziona lub produkt nie istnieje.',
+        'back': 'Wróć'
+    }
+} %}
+
+{% set t = translations.get(lang, translations['en']) %}
+
+<div class="page">
     {% block content %}{% endblock %}
-  </main>
+</div>
+
+{% block scripts %}{% endblock %}
+
 </body>
 </html>

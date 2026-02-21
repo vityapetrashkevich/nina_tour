@@ -1,8 +1,7 @@
-from typing import Optional
+from sqlmodel import SQLModel, Field, Column
+from sqlalchemy import String, Text, UniqueConstraint
 from app.database.models.base import BaseModel
-from datetime import datetime, timezone
-from sqlmodel import Field, Column
-from sqlalchemy import String, Text, UniqueConstraint, TIMESTAMP
+from app.core.config import Languages
 
 
 class ProductCard(BaseModel, table=True):
@@ -11,14 +10,25 @@ class ProductCard(BaseModel, table=True):
     __table_args__ = (
         UniqueConstraint("product_id", "lang"),
     )
-    created_at: datetime = Field(
-        sa_column=Column(TIMESTAMP(timezone=True), default=datetime.now(timezone.utc), nullable=False)
+
+    # id, created_at, updated_at — наследуются от BaseModel
+
+    product_id: int = Field(
+        foreign_key="products.id",
+        nullable=False
     )
 
-    updated_at: datetime = Field(
-        sa_column=Column(TIMESTAMP(timezone=True), default=datetime.now(timezone.utc), nullable=False)
+    lang: Languages = Field(
+        nullable=False,
+        description="Language code: en / ru / pl"
     )
-    product_id: int = Field(foreign_key="products.id", nullable=False)
-    lang: str = Field(sa_column=Column(String(2), nullable=False), description="en / ru / pl")
-    name: str = Field(max_length=255, nullable=False)
-    description: str = Field(sa_column=Column(Text, nullable=True))
+
+    name: str = Field(
+        max_length=255,
+        nullable=False
+    )
+
+    description: str | None = Field(
+        sa_column=Column(Text, nullable=True),
+        description="Localized product description in Markdown format"
+    )

@@ -10,7 +10,7 @@ services:
       - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_DB=${DB_NAME}
-      - PAYMENT_SECRET_API_KEY=${PAYMENT_SECRET_API_KEY}
+      - PAYMENT_KEY=${PAYMENT_KEY}
     ports:
       - "8001:8000"
     restart: on-failure:3

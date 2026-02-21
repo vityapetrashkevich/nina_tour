@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Спасибо за покупку
+{% endblock %}
+
+{% block content %}
+
+<div class="thankyou-wrapper">
+
+    <h1 class="thankyou-title">
+        Спасибо за покупку!
+    </h1>
+
+    <p class="thankyou-subtitle">
+        Ваш путеводитель готов к скачиванию.
+    </p>
+
+    <div class="thankyou-box">
+        <p>{{ file.description_html | safe }}</p>
+
+        <a class="download-btn" href="{{ file.link }}" download>
+            Скачать файл
+        </a>
+    </div>
+
+</div>
+
+{% endblock %}

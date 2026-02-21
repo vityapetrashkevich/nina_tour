@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from typing import Dict
 from sqlalchemy import text
-
+from pydantic import BaseModel
+from app.core.config import settings
 from app.apis.deps import get_session
 
 router = APIRouter(prefix="/service")
@@ -20,3 +21,12 @@ async def health_check_db() -> Dict[str, str]:
         return {"status": "ok"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+class PublicURL(BaseModel):
+    public_url: str
+
+@router.post("/update-public-url")
+async def update_public_url(data: PublicURL):
+    settings.MY_URL = data.public_url.rstrip("/")
+    return {"status": "ok", "public_url": settings.MY_URL}

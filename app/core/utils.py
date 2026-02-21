@@ -1,9 +1,10 @@
-import markdown
-import bleach
 from typing import Any, Dict
 from fastapi import Request
 
-# Allowed tags/attributes/protocols for bleach (use sets to avoid type errors)
+import re
+import markdown
+import bleach
+
 ALLOWED_TAGS = set(bleach.sanitizer.ALLOWED_TAGS) | {
     "p", "br", "hr", "pre", "code", "img",
     "h1", "h2", "h3", "h4", "h5", "h6",
@@ -20,26 +21,56 @@ ALLOWED_ATTRIBUTES.update({
 ALLOWED_PROTOCOLS = set(bleach.sanitizer.ALLOWED_PROTOCOLS) | {"data"}
 
 
-def md_to_safe_html(md_text: str) -> str:
+def preprocess_markdown(md_text: str) -> str:
     """
-    Convert Markdown to HTML and sanitize with bleach.
-    Returns safe HTML string (or empty string).
+    - Добавляем пустую строку перед списками, если её нет.
+    Никаких <br> руками — это делает nl2br.
     """
     if not md_text:
         return ""
+
+    # Если строка заканчивается текстом, а следующая начинается с "- " / "* " / "1. "
+    # — вставляем пустую строку между ними.
+    md_text = re.sub(
+        r"([^\n])\n(- |\* |\d+\. )",
+        r"\1\n\n\2",
+        md_text
+    )
+
+    return md_text
+
+
+def md_to_safe_html(md_text: str) -> str:
+    """
+    Markdown -> HTML -> безопасный HTML.
+    Переносы строк делает расширение nl2br.
+    """
+    if not md_text:
+        return ""
+
     try:
-        html = markdown.markdown(md_text, extensions=["extra", "codehilite", "tables"])
+        md_text = preprocess_markdown(md_text)
+
+        html = markdown.markdown(
+            md_text,
+            extensions=[
+                "extra",    # списки, таблицы, и т.п.
+                "nl2br",    # ОДИНАРНЫЕ \n -> <br>
+                "tables",
+            ],
+        )
+
         clean = bleach.clean(
             html,
             tags=ALLOWED_TAGS,
             attributes=ALLOWED_ATTRIBUTES,
             protocols=list(ALLOWED_PROTOCOLS),
-            strip=True
+            strip=True,
         )
+
         return clean
-    except Exception as e:
-        logger.exception("Failed to convert markdown to html: %s", e)
-        # Fallback: escape the original markdown to avoid raw injection
+
+    except Exception:
         return bleach.clean(md_text, strip=True)
 
 

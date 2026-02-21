@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}
-    Спасибо за покупку
+    {{ t.thank_you_title }}
 {% endblock %}
 
 {% block content %}
@@ -9,18 +9,22 @@
 <div class="thankyou-wrapper">
 
     <h1 class="thankyou-title">
-        Спасибо за покупку!
+        {{ t.thank_you_title }}
     </h1>
 
     <p class="thankyou-subtitle">
-        Ваш путеводитель готов к скачиванию.
+        {{ t.thank_you_subtitle }}
     </p>
 
     <div class="thankyou-box">
-        <p>{{ file.description_html | safe }}</p>
+        <h2>{{ t.thank_you_box_title }}</h2>
 
-        <a class="download-btn" href="{{ file.link }}" download>
-            Скачать файл
+        <div class="file-description">
+            {{ file.description_html | safe }}
+        </div>
+
+        <a class="download-btn" href="{{ file.link }}">
+            {{ t.thank_you_download }}
         </a>
     </div>
 

@@ -33,6 +33,7 @@ class Settings(BaseSettings):
     REVOLUT_URL: str = Field(..., env="REVOLUT_URL")
     # SECRET_API_KEY: str = Field(..., env="PAYMENT_KEY")
     SECRET_API_KEY: str = Field(..., validation_alias="PAYMENT_KEY")
+    MY_URL: str = Field(default="localhost:8001", env="MY_URL")
 
     @computed_field
     @property

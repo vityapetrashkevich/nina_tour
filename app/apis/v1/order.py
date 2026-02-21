@@ -30,7 +30,6 @@ async def create_order_api(
     возвращается эпhemerally в поле checkout_url_response).
     """
     # 1) Проверяем продукт
-    print(str(order_in))
     product = await get_product_by_ids(session, product_code=order_in.product_code)
     if product is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
@@ -46,7 +45,7 @@ async def create_order_api(
         "settlement_currency": order_in.settlement_currency,
         "customer": {"email": order_in.customers_email},
         "metadata": {"product_code": order_in.product_code, "product_lang": order_in.lang},
-        "redirect_url": f'http://localhost:8001/thank-you/{order_in.product_code}/{order_in.lang}',
+        "redirect_url": f'{settings.MY_URL}/thank-you/{order_in.product_code}/{order_in.lang.value}',
     }
     headers = {
         "Content-Type": "application/json",
@@ -126,56 +125,3 @@ async def list_orders_by_status_api(
     session: AsyncSession = Depends(get_session)
 ):
     return await list_orders_by_status(session, status=status, limit=limit, offset=offset)
-
-
-
-# @router.post(
-#     "",
-#     # response_model=ProductResponse,
-#     status_code=status.HTTP_200_OK
-# )
-# async def create_order_api(
-#         order_in: OrderCreate,
-#         session: AsyncSession = Depends(get_session)
-# ):
-#     product = await get_product_by_ids(session, product_code=order_in.product_code)
-#     if product is None:
-#         raise HTTPException(status_code=404, detail="Product not found")
-#     url = Settings.REVOLUT_URL + "/api/orders"
-#
-#     payload = json.dumps({
-#         "amount": product.price,
-#         "currency": product.currency,
-#         'settlement_currency': order_in.settlement_currency,
-#         'customer': {
-#             "email": order_in.customers_email
-#         },
-#         "metadata": {
-#             "product_code": order_in.product_code,
-#             'product_lang': order_in.lang
-#         },
-#     })
-#     headers = {
-#         'Content-Type': 'application/json',
-#         'Accept': 'application/json',
-#         'Authorization': 'Bearer ' + Settings.SECRET_API_KEY,
-#         'Revolut-Api-Version': Settings.Revolut_Api_Version
-#     }
-#     print(headers)
-#     async with httpx.AsyncClient() as client:
-#         response = await client.post(url, headers=headers, data=payload)
-#     if response.status_code == status.HTTP_201_CREATED:
-#         print(order_in.model_dump(exclude={"settlement_currency"}))
-#         print(type(order_in))
-#         print(response.json())
-#         order = OrderSave(
-#             **order_in.model_dump(exclude={"settlement_currency"}),
-#             **response.json()
-#         )
-#         o = await create_order(session, order)
-#         if not o:
-#             raise HTTPException(400, detail="Order creation failed")
-#         return {"url": order.checkout_url}
-#     else:
-#         print(response)
-#         raise HTTPException(status_code=500, detail="Error in payment system side")

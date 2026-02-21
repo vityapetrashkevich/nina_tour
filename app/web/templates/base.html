@@ -1,14 +1,10 @@
 <!DOCTYPE html>
 <html lang="{{ lang or 'en' }}">
 <head>
-    <meta charset="UTF-8">
-    <title>{% block title %}Guide{% endblock %}</title>
+    {# ---------------------------------------------------------
+   TRANSLATIONS (централизованные переводы)
+--------------------------------------------------------- #}
 
-    <link rel="stylesheet" href="/static/css/product.css">
-</head>
-<body>
-
-{# --- TRANSLATIONS AVAILABLE TO ALL CHILD TEMPLATES --- #}
 {% set translations = {
     'ru': {
         'guide_label': 'ПУТЕВОДИТЕЛЬ',
@@ -22,8 +18,14 @@
         'error_title': 'Ошибка',
         'oops': 'Упс!',
         'not_found': 'Страница не найдена или продукт отсутствует.',
-        'back': 'Вернуться назад'
+        'back': 'Вернуться назад',
+
+        'thank_you_title': 'Спасибо за покупку!',
+        'thank_you_subtitle': 'Ваш путеводитель готов к скачиванию.',
+        'thank_you_box_title': 'Ваш путеводитель',
+        'thank_you_download': 'Скачать файл'
     },
+
     'en': {
         'guide_label': 'GUIDE',
         'inside_header': 'WHAT’S INSIDE THE GUIDE',
@@ -36,8 +38,14 @@
         'error_title': 'Error',
         'oops': 'Oops!',
         'not_found': 'Page not found or product does not exist.',
-        'back': 'Go back'
+        'back': 'Go back',
+
+        'thank_you_title': 'Thank you for your purchase!',
+        'thank_you_subtitle': 'Your guide is ready to download.',
+        'thank_you_box_title': 'Your guide',
+        'thank_you_download': 'Download file'
     },
+
     'pl': {
         'guide_label': 'PRZEWODNIK',
         'inside_header': 'CO ZNAJDUJE SIĘ W PRZEWODNIKU',
@@ -50,12 +58,31 @@
         'error_title': 'Błąd',
         'oops': 'Ups!',
         'not_found': 'Strona nie została znaleziona lub produkt nie istnieje.',
-        'back': 'Wróć'
+        'back': 'Wróć',
+
+        'thank_you_title': 'Dziękujemy za zakup!',
+        'thank_you_subtitle': 'Twój przewodnik jest gotowy do pobrania.',
+        'thank_you_box_title': 'Twój przewodnik',
+        'thank_you_download': 'Pobierz plik'
     }
 } %}
 
-{% set t = translations.get(lang, translations['en']) %}
+{# ---------------------------------------------------------
+   LANGUAGE SELECTION
+--------------------------------------------------------- #}
 
+{% set lang_code = lang.value if lang is not string else lang %}
+{% set t = translations.get(lang_code, translations['en']) %}
+
+{# ---------------------------------------------------------
+   PAGE CONTENT
+--------------------------------------------------------- #}
+    <meta charset="UTF-8">
+    <title>{% block title %}Guide{% endblock %}</title>
+
+    <link rel="stylesheet" href="/static/css/product.css">
+</head>
+<body>
 <div class="page">
     {% block content %}{% endblock %}
 </div>

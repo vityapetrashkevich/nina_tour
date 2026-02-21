@@ -26,7 +26,7 @@ async def thank_you_page(
 
     # 2. Получаем файл для языка
     file = await get_product_file(session, product.id, lang)
-    print(str(file))
+
     if not file:
         raise HTTPException(status_code=404, detail="File for this language not found")
     file_norm = ensure_dict(file)
@@ -36,8 +36,7 @@ async def thank_you_page(
     link = f"/api/v1/download/{render_file['id']}"
     render_file['description_html'] = md_to_safe_html(render_file.get("description").replace("https://example.com>", link))
     render_file['link'] = link
-    print(render_file)
-    print(link)
+
     return templates.TemplateResponse(
         "thank_you.html",
         {

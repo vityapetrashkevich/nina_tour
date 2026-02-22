@@ -1,13 +1,9 @@
 {% extends "base.html" %}
 
-{% block title %}
-    {{ t.thank_you_title }}
-{% endblock %}
-
 {% block content %}
 
 <div class="thankyou-wrapper">
-
+    <div class="thankyou-box">
     <h1 class="thankyou-title">
         {{ t.thank_you_title }}
     </h1>
@@ -15,9 +11,6 @@
     <p class="thankyou-subtitle">
         {{ t.thank_you_subtitle }}
     </p>
-
-    <div class="thankyou-box">
-        <h2>{{ t.thank_you_box_title }}</h2>
 
         <div class="file-description">
             {{ file.description_html | safe }}

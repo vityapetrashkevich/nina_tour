@@ -23,21 +23,42 @@ ALLOWED_PROTOCOLS = set(bleach.sanitizer.ALLOWED_PROTOCOLS) | {"data"}
 
 def preprocess_markdown(md_text: str) -> str:
     """
-    - Добавляем пустую строку перед списками, если её нет.
-    Никаких <br> руками — это делает nl2br.
+    Исправляет Markdown:
+    - добавляет пустую строку перед списками
+    - добавляет пустую строку перед строками вида 'Здесь:' если дальше идёт список
     """
     if not md_text:
         return ""
 
-    # Если строка заканчивается текстом, а следующая начинается с "- " / "* " / "1. "
-    # — вставляем пустую строку между ними.
-    md_text = re.sub(
-        r"([^\n])\n(- |\* |\d+\. )",
-        r"\1\n\n\2",
-        md_text
-    )
+    lines = md_text.split("\n")
+    result = []
 
-    return md_text
+    for i, line in enumerate(lines):
+        stripped = line.strip()
+
+        # 1. Если строка заканчивается ":" и следующая строка — список
+        if (
+            stripped.endswith(":")
+            and i + 1 < len(lines)
+            and lines[i + 1].strip().startswith(("- ", "* ", "1. "))
+        ):
+            # Добавляем пустую строку перед этой строкой
+            if result and result[-1].strip() != "":
+                result.append("")
+            result.append(line)
+            continue
+
+        # 2. Стандартное правило: пустая строка перед списками
+        if (
+            stripped.startswith(("- ", "* ", "1. "))
+            and result
+            and result[-1].strip() != ""
+        ):
+            result.append("")
+
+        result.append(line)
+
+    return "\n".join(result)
 
 
 def md_to_safe_html(md_text: str) -> str:

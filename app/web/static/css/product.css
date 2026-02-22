@@ -34,10 +34,14 @@ html,body{
 }
 
 .title{
-    font-size:30px;
+    font-size:34px;
     margin-top:6px;
     color:#2b3b2b;
     font-weight:700;
+    text-align: center;
+}
+.strong{
+     text-align: center;
 }
 
 /* PRICE — more prominent */
@@ -317,3 +321,154 @@ html,body{
 .download-btn:hover {
     background: var(--accent-dark);
 }
+/* --- PRODUCT PAGE IMPROVEMENTS --- */
+
+/* Larger spacing between paragraphs */
+.intro p,
+.image-description p,
+.page p {
+    margin: 18px 0;
+}
+
+/* Compact list spacing */
+/* Compact list spacing */
+.page ul,
+.page ol {
+    margin: 12px 0;
+    padding-left: 22px;
+}
+
+.page li {
+    margin: 2px 0;
+    line-height: 1.45;
+}
+
+/* Remove paragraph spacing inside list items */
+.page li p {
+    margin: 2px 0 !important;
+    padding: 0;
+}
+
+.title,
+.title h1,
+.title p {
+    text-align: center;
+}
+.image-side img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+.text-side {
+    flex: 1;
+    aspect-ratio: 1 / 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.image-text-block {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px; /* расстояние между квадратами */
+    position: relative;
+}
+
+.image-side,
+.text-side {
+    width: 50%; /* было ~50%, теперь на 20% меньше */
+    aspect-ratio: 1 / 1;
+}
+
+/* Квадратные блоки */
+.image-side,
+.text-side {
+    flex: 1;
+    aspect-ratio: 1 / 1;
+}
+
+/* Фото заполняет квадрат */
+.image-side img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+/* Текстовый квадрат */
+.text-side {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    border-radius: 12px;
+    background: #f7f7f7;
+}
+
+/* Контейнер */
+.image-text-block {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 80px;
+    position: relative;
+}
+
+/* Вертикальная линия */
+.image-text-block::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #64765233;
+    transform: translateX(-50%);
+    z-index: 1;
+}
+
+/* Точка */
+.dot {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 5;
+    padding: 6px;
+    background: var(--card);
+    border-radius: 50%;
+}
+
+.image-text-wrapper {
+    position: relative;
+    padding: 40px 0;
+}
+
+/* Единая вертикальная линия */
+.image-text-wrapper::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #64765233;
+    transform: translateX(-50%);
+    z-index: 1;
+}
+/* Уменьшаем ширину страницы на 20% */
+:root {
+    --maxw: 750px; /* было 900px */
+}
+
+/* Крупный текст в квадратном блоке */
+.text-side .image-description p {
+    font-size: 20px;
+    line-height: 1.6;
+    text-align: center;
+    max-width: 80%;
+    margin: 0 auto;
+}
+

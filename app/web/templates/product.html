@@ -8,7 +8,7 @@
 
 {% if product %}
 
-    <div class="guide-label">{{ t.guide_label }}</div>
+<!--    <div class="guide-label">{{ t.guide_label }}</div>-->
 
     <div class="title">
         {% if product.name_html %}
@@ -31,11 +31,17 @@
     </div>
 
     <h2 class="gallery-header">{{ t.inside_header }}</h2>
-
+    <div class="image-text-wrapper">
     {% for image in product.images %}
     <div class="image-text-block {% if loop.index is even %}reverse{% endif %}">
         <div class="image-side">
             <img src="{{ image.url }}" alt="">
+        </div>
+
+        <div class="dot">
+            <svg width="20" height="20" viewBox="0 0 20 20">
+                <circle cx="10" cy="10" r="10" fill="#647652"></circle>
+            </svg>
         </div>
 
         <div class="text-side">
@@ -49,7 +55,7 @@
         </div>
     </div>
     {% endfor %}
-
+    </div>
 {% endif %}
 
 {# --- BUY BUTTON + MODAL --- #}

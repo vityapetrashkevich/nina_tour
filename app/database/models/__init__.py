@@ -4,3 +4,5 @@ from app.database.models.product_card import ProductCard
 from app.database.models.product_files import ProductFile
 from app.database.models.order import Order
 from app.database.models.product_card_images import ProductCardImage
+from app.database.models.admin import Admin
+from app.database.models.system_metadata import SystemMetadata

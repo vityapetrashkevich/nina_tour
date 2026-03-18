@@ -13,7 +13,6 @@ class OrderBase(BaseModel):
     lang: Languages = Field(..., example="en")
 
 
-
 class OrderCreate(OrderBase):
     customers_email: EmailStr = Field(example="ivan.petrov@example.com")
     settlement_currency: Currency = Field(

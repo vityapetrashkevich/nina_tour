@@ -3,7 +3,7 @@ from typing import Dict
 from sqlalchemy import text
 from pydantic import BaseModel
 from app.core.config import settings
-from app.apis.deps import get_session
+from app.apis.deps import get_session, get_current_admin
 
 router = APIRouter(prefix="/service")
 
@@ -13,7 +13,7 @@ async def ping() -> Dict[str, str]:
 
 
 @router.get("/health/db", response_model=Dict[str, str], status_code=status.HTTP_200_OK)
-async def health_check_db() -> Dict[str, str]:
+async def health_check_db(admin=Depends(get_current_admin)) -> Dict[str, str]:
     try:
         async for db in get_session():  # <- здесь async for
             await db.execute(text("SELECT 1"))
@@ -27,6 +27,6 @@ class PublicURL(BaseModel):
     public_url: str
 
 @router.post("/update-public-url")
-async def update_public_url(data: PublicURL):
+async def update_public_url(data: PublicURL, admin=Depends(get_current_admin)):
     settings.MY_URL = data.public_url.rstrip("/")
     return {"status": "ok", "public_url": settings.MY_URL}

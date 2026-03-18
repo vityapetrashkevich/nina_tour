@@ -1,9 +1,10 @@
+import bleach
+import markdown
 from typing import Any, Dict
 from fastapi import Request
-
-import re
-import markdown
-import bleach
+import asyncio
+import yaml
+import aiofiles
 
 ALLOWED_TAGS = set(bleach.sanitizer.ALLOWED_TAGS) | {
     "p", "br", "hr", "pre", "code", "img",
@@ -38,9 +39,9 @@ def preprocess_markdown(md_text: str) -> str:
 
         # 1. Если строка заканчивается ":" и следующая строка — список
         if (
-            stripped.endswith(":")
-            and i + 1 < len(lines)
-            and lines[i + 1].strip().startswith(("- ", "* ", "1. "))
+                stripped.endswith(":")
+                and i + 1 < len(lines)
+                and lines[i + 1].strip().startswith(("- ", "* ", "1. "))
         ):
             # Добавляем пустую строку перед этой строкой
             if result and result[-1].strip() != "":
@@ -50,9 +51,9 @@ def preprocess_markdown(md_text: str) -> str:
 
         # 2. Стандартное правило: пустая строка перед списками
         if (
-            stripped.startswith(("- ", "* ", "1. "))
-            and result
-            and result[-1].strip() != ""
+                stripped.startswith(("- ", "* ", "1. "))
+                and result
+                and result[-1].strip() != ""
         ):
             result.append("")
 
@@ -75,8 +76,8 @@ def md_to_safe_html(md_text: str) -> str:
         html = markdown.markdown(
             md_text,
             extensions=[
-                "extra",    # списки, таблицы, и т.п.
-                "nl2br",    # ОДИНАРНЫЕ \n -> <br>
+                "extra",  # списки, таблицы, и т.п.
+                "nl2br",  # ОДИНАРНЫЕ \n -> <br>
                 "tables",
             ],
         )
@@ -141,6 +142,34 @@ def build_image_url(request: Request, image_obj: Dict) -> str:
     if filename:
         # if filename already contains img/ prefix
         if filename.startswith("img/"):
-            return request.url_for("static", path=filename[len("img/"):]) if False else "/static/" + filename.lstrip("/")
+            return request.url_for("static", path=filename[len("img/"):]) if False else "/static/" + filename.lstrip(
+                "/")
         return request.url_for("static", path=f"img/{filename}")
     return ""
+
+
+async def read_yaml_async(file_path: str):
+    """Асинхронно читает YAML файл и возвращает два документа (meta, init_data)."""
+    try:
+        async with aiofiles.open(file_path, mode='r', encoding='utf-8') as f:
+            content = await f.read()
+
+        # Загружаем ВСЕ документы
+        docs = list(yaml.safe_load_all(content))
+
+        if len(docs) == 1:
+            # Если документ один — считаем, что meta и init_data в одном словаре
+            return docs[0], docs[0]
+
+        if len(docs) >= 2:
+            # Если два документа — возвращаем как meta и init_data
+            return docs[0], docs[1]
+
+        raise ValueError("YAML file is empty or invalid")
+
+    except FileNotFoundError:
+        print(f"Ошибка: Файл {file_path} не найден.")
+    except yaml.YAMLError as e:
+        print(f"Ошибка парсинга YAML: {e}")
+    except Exception as e:
+        print(f"Произошла непредвиденная ошибка: {e}")

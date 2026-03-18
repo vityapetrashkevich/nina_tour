@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from app.apis.deps import get_session
+from app.apis.deps import get_session, get_current_admin
 from app.schemas.product_file import (
     ProductFileCreate,
     ProductFileUpdate,
@@ -17,7 +17,6 @@ from app.database.crud.product_files import (
 )
 from app.core.config import Languages
 
-
 router = APIRouter(prefix="/product-files")
 
 
@@ -26,8 +25,9 @@ router = APIRouter(prefix="/product-files")
 # ---------------------------------------------------------
 @router.post("/", response_model=ProductFileResponse, status_code=status.HTTP_201_CREATED)
 async def create_file(
-    data: ProductFileCreate,
-    session: AsyncSession = Depends(get_session)
+        data: ProductFileCreate,
+        session: AsyncSession = Depends(get_session),
+        admin=Depends(get_current_admin)
 ):
     existing = await get_product_file(session, data.product_id, data.lang)
     if existing:
@@ -44,8 +44,8 @@ async def create_file(
 # ---------------------------------------------------------
 @router.get("/{file_id}", response_model=ProductFileResponse)
 async def read_file_by_id(
-    file_id: int,
-    session: AsyncSession = Depends(get_session)
+        file_id: int,
+        session: AsyncSession = Depends(get_session)
 ):
     file = await get_product_file_by_id(session, file_id)
     if not file:
@@ -58,9 +58,9 @@ async def read_file_by_id(
 # ---------------------------------------------------------
 @router.get("/by-product/{product_id}/{lang}", response_model=ProductFileResponse)
 async def read_file_by_product_and_lang(
-    product_id: int,
-    lang: Languages,
-    session: AsyncSession = Depends(get_session)
+        product_id: int,
+        lang: Languages,
+        session: AsyncSession = Depends(get_session)
 ):
     file = await get_product_file(session, product_id, lang)
     if not file:
@@ -73,12 +73,11 @@ async def read_file_by_product_and_lang(
 # ---------------------------------------------------------
 @router.get("/", response_model=list[ProductFileResponse])
 async def list_files(
-    product_id: int | None = None,
-    session: AsyncSession = Depends(get_session)
+        product_id: int | None = None,
+        session: AsyncSession = Depends(get_session)
 ):
     if product_id is not None:
         return await get_files_for_product(session, product_id)
-
 
 
 # ---------------------------------------------------------
@@ -86,9 +85,10 @@ async def list_files(
 # ---------------------------------------------------------
 @router.patch("/{file_id}", response_model=ProductFileResponse)
 async def update_file(
-    file_id: int,
-    data: ProductFileUpdate,
-    session: AsyncSession = Depends(get_session)
+        file_id: int,
+        data: ProductFileUpdate,
+        session: AsyncSession = Depends(get_session),
+        admin=Depends(get_current_admin)
 ):
     updated = await update_product_file(session, file_id, data)
     if not updated:
@@ -101,8 +101,9 @@ async def update_file(
 # ---------------------------------------------------------
 @router.delete("/{file_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_file(
-    file_id: int,
-    session: AsyncSession = Depends(get_session)
+        file_id: int,
+        session: AsyncSession = Depends(get_session),
+        admin=Depends(get_current_admin)
 ):
     ok = await delete_product_file(session, file_id)
     if not ok:

@@ -8,7 +8,7 @@ from app.database.crud.product import get_product_by_code
 from app.core.config import Languages
 from fastapi.templating import Jinja2Templates
 
-router = APIRouter(prefix="/thank-you", tags=["Thank You"])
+router = APIRouter(prefix="/thank-you")
 templates = Jinja2Templates(directory="app/web/templates")
 
 

@@ -3,7 +3,7 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status, Query, Path
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from app.apis.deps import get_session
+from app.apis.deps import get_session, get_current_admin
 from app.schemas import ProductCreate, ProductUpdate, ProductResponse
 from app.database.crud.product import create_product, get_product_by_ids, list_products, update_product, delete_product
 
@@ -20,7 +20,8 @@ router = APIRouter(prefix="/products")
 )
 async def create_product_endpoint(
     product_in: ProductCreate,
-    session: AsyncSession = Depends(get_session)
+    session: AsyncSession = Depends(get_session),
+    admin=Depends(get_current_admin)
 ):
     existing = await get_product_by_ids(
         session,
@@ -80,7 +81,8 @@ async def list_products_endpoint(
 async def update_product_endpoint(
     product_id: int,
     product_in: ProductUpdate,
-    session: AsyncSession = Depends(get_session)
+    session: AsyncSession = Depends(get_session),
+        admin=Depends(get_current_admin)
 ):
     updated = await update_product(session, product_id, product_in)
     if updated is None:
@@ -97,7 +99,8 @@ async def update_product_endpoint(
 )
 async def delete_product_endpoint(
     product_id: int,
-    session: AsyncSession = Depends(get_session)
+    session: AsyncSession = Depends(get_session),
+        admin=Depends(get_current_admin)
 ):
     deleted = await delete_product(session, product_id)
     if not deleted:

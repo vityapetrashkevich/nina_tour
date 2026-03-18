@@ -7,7 +7,7 @@ import json
 import logging
 
 from app.core.config import settings
-from app.apis.deps import get_session
+from app.apis.deps import get_session, get_current_admin
 from app.schemas import OrderCreate, OrderSave, OrderRead
 from app.database.crud.product import get_product_by_ids
 from app.database.crud.order import create_order, get_order_by_id, list_orders, list_orders_by_status
@@ -21,8 +21,8 @@ router = APIRouter(prefix="/order")
     status_code=status.HTTP_200_OK
 )
 async def create_order_api(
-    order_in: OrderCreate,
-    session: AsyncSession = Depends(get_session),
+        order_in: OrderCreate,
+        session: AsyncSession = Depends(get_session),
 ):
     """
     Создаёт заказ: 1) проверяет продукт, 2) вызывает провайдера платежей, 3) сохраняет заказ в БД.
@@ -84,7 +84,7 @@ async def create_order_api(
 
     # 6) Сохраняем заказ в БД
     # try:
-        # create_order — твоя CRUD функция; она должна вернуть OrderSave (или None/raise)
+    # create_order — твоя CRUD функция; она должна вернуть OrderSave (или None/raise)
     saved_order = await create_order(session, order)
     # except ValueError as exc:
     #     logger.exception("Failed to save order to DB")
@@ -101,7 +101,8 @@ async def create_order_api(
 
 
 @router.get("/{order_id}", response_model=OrderRead)
-async def get_order_api(order_id: str = Path(..., description="Order id"), session: AsyncSession = Depends(get_session)):
+async def get_order_api(order_id: str = Path(..., description="Order id"),
+                        session: AsyncSession = Depends(get_session)):
     order = await get_order_by_id(session, order_id)
     if order is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Order not found")
@@ -110,18 +111,20 @@ async def get_order_api(order_id: str = Path(..., description="Order id"), sessi
 
 @router.get("/", response_model=List[OrderRead])
 async def list_orders_api(
-    limit: int = Query(100, ge=1, le=1000),
-    offset: int = Query(0, ge=0),
-    session: AsyncSession = Depends(get_session)
+        limit: int = Query(100, ge=1, le=1000),
+        offset: int = Query(0, ge=0),
+        session: AsyncSession = Depends(get_session),
+        admin=Depends(get_current_admin)
 ):
     return await list_orders(session, limit=limit, offset=offset)
 
 
 @router.get("/by-status/{status}", response_model=List[OrderRead])
 async def list_orders_by_status_api(
-    status: str,
-    limit: int = Query(100, ge=1, le=1000),
-    offset: int = Query(0, ge=0),
-    session: AsyncSession = Depends(get_session)
+        status: str,
+        limit: int = Query(100, ge=1, le=1000),
+        offset: int = Query(0, ge=0),
+        session: AsyncSession = Depends(get_session),
+        admin=Depends(get_current_admin)
 ):
     return await list_orders_by_status(session, status=status, limit=limit, offset=offset)

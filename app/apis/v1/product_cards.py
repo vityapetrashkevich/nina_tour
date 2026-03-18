@@ -2,9 +2,10 @@
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, status, Query, Path
+from sqlalchemy.testing.pickleable import User
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from app.apis.deps import get_session
+from app.apis.deps import get_session, get_current_admin
 from app.schemas import ProductCardCreate, ProductCardUpdate, ProductCardResponse
 from app.database.crud.product_card import (
     create_product_card,
@@ -26,8 +27,9 @@ router = APIRouter(prefix="/product_cards")
     status_code=status.HTTP_201_CREATED
 )
 async def create_product_card_endpoint(
-    product_card_in: ProductCardCreate,
-    session: AsyncSession = Depends(get_session)
+        product_card_in: ProductCardCreate,
+        session: AsyncSession = Depends(get_session),
+        current_user: User = Depends(get_current_admin)
 ):
     return await create_product_card(session, product_card_in)
 
@@ -40,8 +42,8 @@ async def create_product_card_endpoint(
     response_model=ProductCardResponse
 )
 async def get_product_card_endpoint(
-    product_card_id: int,
-    session: AsyncSession = Depends(get_session)
+        product_card_id: int,
+        session: AsyncSession = Depends(get_session)
 ):
     product_card = await get_product_card_by_id(session, product_card_id)
     if not product_card:
@@ -57,9 +59,10 @@ async def get_product_card_endpoint(
     response_model=List[ProductCardResponse]
 )
 async def list_product_cards_endpoint(
-    limit: int = Query(100, ge=1, le=1000),
-    offset: int = Query(0, ge=0),
-    session: AsyncSession = Depends(get_session)
+        limit: int = Query(100, ge=1, le=1000),
+        offset: int = Query(0, ge=0),
+        session: AsyncSession = Depends(get_session),
+        admin=Depends(get_current_admin)
 ):
     return await list_product_cards(session, limit=limit, offset=offset)
 
@@ -72,9 +75,10 @@ async def list_product_cards_endpoint(
     response_model=ProductCardResponse
 )
 async def update_product_card_endpoint(
-    product_card_id: int,
-    product_card_in: ProductCardUpdate,
-    session: AsyncSession = Depends(get_session)
+        product_card_id: int,
+        product_card_in: ProductCardUpdate,
+        session: AsyncSession = Depends(get_session),
+        current_user: User = Depends(get_current_admin)
 ):
     updated = await update_product_card(session, product_card_id, product_card_in)
     if updated is None:
@@ -90,8 +94,9 @@ async def update_product_card_endpoint(
     status_code=status.HTTP_204_NO_CONTENT
 )
 async def delete_product_card_endpoint(
-    product_card_id: int,
-    session: AsyncSession = Depends(get_session)
+        product_card_id: int,
+        session: AsyncSession = Depends(get_session),
+        admin=Depends(get_current_admin)
 ):
     deleted = await delete_product_card(session, product_card_id)
     if not deleted:

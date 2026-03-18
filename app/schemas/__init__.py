@@ -3,3 +3,5 @@ from .product import ProductCreate, ProductResponse, ProductUpdate
 from .order import OrderCreate, OrderSave, OrderUpdate, OrderRead
 from .product_card_image import ProductCardImageCreate,  ProductCardImageUpdate, ProductCardImageResponse
 from .product_with_card_web import ProductWithCardResponse
+from .admins import AdminRead, AdminUpdateRequest, AdminRegisterRequest, AdminRegisterResponse, AdminUpdateResponse
+from .admins import StepUpResponse, StepUpRequest

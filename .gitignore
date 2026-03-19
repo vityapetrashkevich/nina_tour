@@ -2,3 +2,4 @@ venv
 .env
 .idea
 nginx/ssl/private.key.pem
+app/init_data.yaml

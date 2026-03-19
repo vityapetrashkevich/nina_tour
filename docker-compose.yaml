@@ -1,19 +1,4 @@
 services:
-  backend:
-    build: .
-    container_name: backend_app
-#    command: uvicorn main:app --host 0.0.0.0 --port 8000
-    expose:
-      - "8000"
-    env_file:
-      - .env
-    environment:
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_DB=${DB_NAME}
-      - PAYMENT_KEY=${PAYMENT_KEY}
-    restart: on-failure:3
-
   database:
     image: postgres:16
     container_name: postgres_db
@@ -28,6 +13,23 @@ services:
     ports:
       - "5432:5432"
     restart: always
+
+  backend:
+    build: .
+    container_name: backend_app
+#    command: uvicorn main:app --host 0.0.0.0 --port 8000
+    expose:
+      - "8000"
+    env_file:
+      - .env
+    depends_on:
+      - database
+    environment:
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_DB=${DB_NAME}
+      - PAYMENT_KEY=${PAYMENT_KEY}
+    restart: on-failure:3
 
   nginx:
     image: nginx:latest

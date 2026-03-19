@@ -1,4 +1,4 @@
-  #!/bin/sh
+#!/bin/sh
 
 echo "Waiting for Postgres..."
 while ! nc -z database 5432; do

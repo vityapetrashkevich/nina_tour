@@ -55,7 +55,7 @@ services:
     volumes:
       - pgadmin_data_nina:/var/lib/pgadmin
       - ./nginx/ssl/domain.cert.pem:/certs/server.cert
-      - ./nginx/ssl/public.key.pem:/certs/server.key
+      - ./nginx/ssl/private.key.pem:/certs/server.key
     restart: on-failure:3
 
 volumes:

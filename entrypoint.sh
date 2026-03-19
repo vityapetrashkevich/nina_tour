@@ -1,9 +1,7 @@
 #!/bin/sh
 
 echo "Waiting for Postgres..."
-while ! nc -z database 5432; do
-  sleep 1
-done
+
 echo "Postgres is up."
 
 echo "Running migrations..."
